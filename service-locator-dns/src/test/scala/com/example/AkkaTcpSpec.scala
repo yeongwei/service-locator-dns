@@ -12,11 +12,11 @@ import java.net.InetSocketAddress
 import akka.actor.Terminated
 import java.net.InetAddress
 
-private object EchoService {
-  def props(endpoint: InetSocketAddress): Props = Props(new EchoService(endpoint))
+private object TcpEchoService {
+  def props(endpoint: InetSocketAddress): Props = Props(new TcpEchoService(endpoint))
 }
 
-private class EchoService(endpoint: InetSocketAddress) extends Actor with ActorLogging {
+private class TcpEchoService(endpoint: InetSocketAddress) extends Actor with ActorLogging {
   def receive = {
     case Tcp.Connected(remote, local) => {
       log.info(s"Connected from ${remote} to ${local}")
@@ -45,8 +45,8 @@ private class EchoService(endpoint: InetSocketAddress) extends Actor with ActorL
   }
 }
 
-object AkkaIOspec {
-  protected def name = "AkkaIOspec"
+object AkkaTcpSpec {
+  protected def name = "AkkaTcpSpec"
   protected def configuration = ConfigFactory.load(
     ConfigFactory.parseString(
       """
@@ -61,12 +61,12 @@ object AkkaIOspec {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem(name, configuration)
     val endpoint = new InetSocketAddress(InetAddress.getLocalHost.getHostName, 10116)
-    val echoService = system.actorOf(EchoService.props(endpoint), "echoService")
+    val echoService = system.actorOf(TcpEchoService.props(endpoint), "echoService")
     Thread.sleep(3000)
     IO(Tcp) ! Tcp.Bind(echoService, endpoint)
   }
 }
 
-class AkkaIOspec {
+class AkkaTcpSpec {
 
 }
