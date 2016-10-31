@@ -5,6 +5,9 @@ lazy val root = project
 lazy val serviceLocatorDns = project
   .in(file("service-locator-dns"))
   .enablePlugins(AutomateHeaderPlugin)
+  .settings(
+	// libraryDependencies ++= Seq(Library.sprayCan)
+  )
 
 lazy val lagomServiceLocatorDns = project
   .in(file("lagom-service-locator-dns"))

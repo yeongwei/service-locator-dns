@@ -21,6 +21,7 @@ object Library {
   val akkaTestkit = "com.typesafe.akka"   %% "akka-testkit"      % Version.akka
   val lagom       = "com.lightbend.lagom" %% "lagom-javadsl-api" % Version.lagom
   val scalaTest   = "org.scalatest"       %% "scalatest"         % Version.scalaTest
+  // val sprayCan	  = "io.spray" %% "spray-can" % "1.3.1" 
 }
 
 object Resolver {

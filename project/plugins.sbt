@@ -1,6 +1,7 @@
 logLevel := Level.Warn
 
 resolvers += Resolver.typesafeRepo("releases")
+// resolvers += "spray repo" at "http://nightlies.spray.io"
 
 addSbtPlugin("com.typesafe.sbt"  % "sbt-scalariform" % "1.3.0")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"      % "1.5.1")
