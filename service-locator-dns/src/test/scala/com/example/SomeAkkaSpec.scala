@@ -1,4 +1,4 @@
-package persistent.service.dns.locator
+package com.example
 
 import akka.actor.ActorSystem
 import akka.testkit.TestProbe
