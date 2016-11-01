@@ -5,15 +5,22 @@ import akka.pattern.pipe
 import akka.io.IO
 import akka.io.Dns
 import akka.actor.ActorSystem
+import akka.util.Timeout
+import akka.testkit.TestKit
+import akka.actor.ActorRef
 import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.FunSpecLike
 import scala.concurrent.Await
-import akka.util.Timeout
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 object AkkaDnSpec {
-  protected def name = "AkkaDnSpec"
-  protected def configuration = ConfigFactory.load(
+  def name = "AkkaDnSpec"
+  def configuration = ConfigFactory.load(
     ConfigFactory.parseString(
       """
         |  akka {
@@ -35,6 +42,31 @@ object AkkaDnSpec {
   }
 }
 
-class AkkaDnsSpec {
+class AkkaDnsSpec extends TestKit(ActorSystem(AkkaDnSpec.name, AkkaDnSpec.configuration)) 
+  with FunSpecLike with BeforeAndAfterAll {
   
+  private var dns: ActorRef = _
+  private implicit val timeout = new Timeout(10, TimeUnit.SECONDS)
+  
+  override def beforeAll = {
+    dns = IO(Dns)
+  }
+  override def afterAll = {
+    system.stop(dns)
+    system.terminate()
+  }
+  
+  describe("DNS") {
+    it("should resolve some well known hostname") {
+      val result = IO(Dns).ask(Dns.Resolve("ns1.telstra.net")).mapTo[Dns.Resolved] // Ensure a return type
+      Try(Await.result(result, timeout.duration)) match {
+        case Success(r) => {
+          info(s"${r}")
+          assert(r.ipv4.size > 0)
+          assert(r.ipv4.forall { inet => inet.getHostAddress.equals("139.130.4.5") })
+        }
+        case Failure(r) => assert(false)
+      }
+    }
+  }
 }
